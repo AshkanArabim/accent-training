@@ -1,15 +1,19 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import apiRouter from "./routes/api.route"
 
-dotenv.config();
+const app = express()
+const PORT = 3001
 
-const app: Express = express();
-const port = process.env.PORT || 3000;
+// middleware
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
-});
+// add api router
+app.use('/api', apiRouter);
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`)
+})
+
+// TODO: connect to mongo
