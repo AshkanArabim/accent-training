@@ -1,13 +1,18 @@
-# import unirest
-# import os
+import os
+import requests
+import json
 
-# api_key = "<" + os.environ.get('WORDS_API_KEY') + ">"
-                         
-# def word2Ipa():
-#   # Authorization for WordsAPI
-#   response = unirest.get("https://wordsapiv1.p.mashape.com/words/soliloquy",
-#     headers={
-#       "X-Mashape-Key": api_key,
-#       "Accept": "application/json"
-#     }
-#   )
+def word2Ipa(word):
+  api_key = os.environ.get('WORDS_API_KEY')
+  url = "https://wordsapiv1.p.rapidapi.com/words/" + word + "/pronunciation"
+
+  headers = {
+    "x-rapidapi-key": api_key,
+    "x-rapidapi-host": "wordsapiv1.p.rapidapi.com"
+  }
+
+  response = requests.get(url, headers=headers)
+
+  response = response.json()
+
+  return response['pronunciation']['all']
