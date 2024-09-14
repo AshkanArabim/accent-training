@@ -35,7 +35,7 @@ function App() {
 
   const handleRating = (rating) => {
     setRating(rating);
-    console.log('Rating:', rating); 
+    console.log('Rating:', rating);
   };
 
   return (
@@ -52,7 +52,7 @@ function App() {
             </div>
             <h3 className="dynamic-word">Atlas</h3>
             <button className="mic-button" onClick={handleFlip}>
-              Microphone
+              <i className="fas fa-microphone"></i> {/* Microphone icon */}
             </button>
           </div>
 
@@ -60,7 +60,7 @@ function App() {
             <h2>at·luhs</h2>
             <h3>Atlas</h3>
             <button className="mic-button" onClick={handleFlip}>
-              Go Back
+              <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
             </button>
           </div>
         </div>

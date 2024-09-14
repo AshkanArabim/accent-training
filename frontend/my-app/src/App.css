@@ -227,10 +227,12 @@ body {
 }
 
 .mic-button {
-  font-size: 1.5rem;
+  font-size: 2rem;
   background: #333;
   border: 2px solid #555;
   border-radius: 50%;
+  width: 70px; /* Width and height need to be equal for a circle */
+  height: 70px; /* Matches width to create a perfect circle */
   padding: 10px 20px;
   cursor: pointer;
   transition: background 0.3s;
