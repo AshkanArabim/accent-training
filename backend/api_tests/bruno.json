@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "accent_training_api_tests",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
