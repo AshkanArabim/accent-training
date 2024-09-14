@@ -1,5 +1,5 @@
 from flask import Flask
-# from turnWordToIpa import word2Ipa
+from turnWordToIpa import word2Ipa
 from aud2ipa import aud2IPA
 
 app = Flask(__name__)
@@ -10,8 +10,7 @@ def home():
 
 @app.route('/word2ipa/<word>')
 def word2ipa(word):
-    # return word2Ipa(word)
-    return ""
+    return word2Ipa(word)
     
 @app.route("/aud2ipa")
 def aud2ipa():
