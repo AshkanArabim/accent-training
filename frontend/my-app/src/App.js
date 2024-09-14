@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -6,7 +6,9 @@ function App() {
   const [isMoved, setIsMoved] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRatingContainerVisible, setIsRatingContainerVisible] = useState(false);
+  const [ratingVisible, setRatingVisible] = useState(false); // For rating transition
   const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
+  const [feedbackVisible, setFeedbackVisible] = useState(false); // For feedback transition
   const [rating, setRating] = useState(null);
 
   const handleFlip = () => {
@@ -30,8 +32,28 @@ function App() {
       setIsExpanded(false);
       setIsRatingContainerVisible(false);
       setIsFeedbackContainerVisible(false);
+      setRatingVisible(false); // Reset the visibility state for rating
+      setFeedbackVisible(false); // Reset the visibility state for feedback
     }
   };
+
+  // Delay adding the visible class for the rating container
+  useEffect(() => {
+    if (isRatingContainerVisible) {
+      setTimeout(() => {
+        setRatingVisible(true);
+      }, 100); // Small delay before applying visibility
+    }
+  }, [isRatingContainerVisible]);
+
+  // Delay adding the visible class for the feedback container
+  useEffect(() => {
+    if (isFeedbackContainerVisible) {
+      setTimeout(() => {
+        setFeedbackVisible(true);
+      }, 100); // Small delay before applying visibility
+    }
+  }, [isFeedbackContainerVisible]);
 
   const handleRating = (rating) => {
     setRating(rating);
@@ -69,7 +91,7 @@ function App() {
       </div>
 
       {isRatingContainerVisible && (
-        <div className="rating-container rating-container-visible">
+        <div className={`rating-container ${ratingVisible ? 'rating-container-visible' : ''}`}>
           <h2>Rate Your Pronunciation</h2>
           <div className="rating-buttons">
             <button className="rating-button bad" onClick={() => handleRating('Bad')}>Bad</button>
@@ -81,7 +103,7 @@ function App() {
       )}
 
       {isFeedbackContainerVisible && (
-        <div className="feedback-container feedback-container-visible">
+        <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
           <p>AI feedback goes here</p>
         </div>
