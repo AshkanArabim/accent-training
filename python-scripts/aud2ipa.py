@@ -5,4 +5,4 @@ def aud2IPA(audio):
     model = read_recognizer()
 
     # run inference -> æ l u s ɔ ɹ s
-    return model.recognize('sample.wav')
+    return model.recognize(audio)

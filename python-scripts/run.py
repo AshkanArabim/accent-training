@@ -14,9 +14,9 @@ def word2ipa(word):
     # return word2Ipa(word)
     return ""
     
-@app.route("/aud2ipa")
-def aud2ipa():
-    return aud2IPA("file")
+@app.route("/aud2ipa/<audio>")
+def aud2ipa(audio):
+    return aud2IPA(audio)
 
 @app.route('/word2aud/<word>')
 def word2aud(word):
