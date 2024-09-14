@@ -47,7 +47,9 @@ function App() {
         <div className={`card ${isExpanded ? 'expanded' : ''}`}>
           <div className="card-front">
             <div className="pronunciation-container">
-              <div className="speaker-box">Speaker</div>
+              <button className="speaker-box">
+                <i className="fas fa-volume-up"></i> {/* Speaker icon */}
+              </button>
               <h2 className="dynamic-pronunciation">at·luhs</h2>
             </div>
             <h3 className="dynamic-word">Atlas</h3>

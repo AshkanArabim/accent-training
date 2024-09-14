@@ -208,8 +208,20 @@ body {
   padding: 10px 20px;
   font-size: 1.8rem;
   color: white;
+  cursor: pointer; /* Make it clickable */
   position: absolute;
   left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speaker-box:hover {
+  background: #444;
+}
+
+.speaker-box i {
+  font-size: 1.5rem;
 }
 
 .dynamic-pronunciation {
