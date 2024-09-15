@@ -7,7 +7,7 @@ def word2Def(word):
   url = "https://wordsapiv1.p.rapidapi.com/words/" + word + "/definitions"
 
   headers = {
-    "x-rapidapi-key": "62661a091cmshd7f7e3dac296219p1918f4jsn2a253a5c6f6e",
+    "x-rapidapi-key": api_key,
     "x-rapidapi-host": "wordsapiv1.p.rapidapi.com"
   }
 
