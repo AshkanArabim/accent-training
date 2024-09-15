@@ -16,7 +16,7 @@ function App() {
   const [pronunciationAudioData, setPronunciationAudioData] = useState(null);
 
   const [pronunciation, setPronunciation] = useState("Fetching...");  
-  const [definition, setDefinition] = useState("Fetching...");
+  const [definition, setDefinition] = useState("Fetching...");  // Definition state
   const [word] = useState("Atlas");  
 
   // Fetch the word pronunciation
@@ -174,13 +174,16 @@ function App() {
           {/* Back card */}
           <div className="card-back">
             {/* Speaker button plays the fetched pronunciation audio */}
-            <button className="speaker-box" onClick={playPronunciationAudio}>
-              <i className="fas fa-volume-up"></i> {/* Speaker icon */}
-            </button>
+            <div className="back-content">
+              <button className="speaker-box" onClick={playPronunciationAudio}>
+                <i className="fas fa-volume-up"></i> {/* Speaker icon */}
+              </button>
+              <p className="definition">Definition: {definition}</p> {/* Display the definition here */}
+            </div>
             <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
             <h3>{word}</h3> {/* Word */}
             <button className="mic-button" onClick={handleFlip}>
-              <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
+              <i className="fas fa-undo"></i> {/* Undo icon */}
             </button>
 
             {/* Play Recording button */}
