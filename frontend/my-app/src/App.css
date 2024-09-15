@@ -90,10 +90,10 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: right;
   align-items: flex-start;
   padding: 20px;
-  text-align: left;
+  text-align: right;
   border-radius: 20px; 
 }
 
@@ -108,9 +108,11 @@ body {
 }
 
 .card-back .mic-button {
-  align-self: flex-start;
   padding: 10px 20px;
   font-size: 1.2rem;
+  margin-top: 200px;    /* Adjust the top margin as needed */
+  margin-right: 45px;
+  align-self: flex-start; /* Aligns the button to the left */
 }
 
 .rating-container {
@@ -166,32 +168,6 @@ body {
 
 .rating-button:hover {
   filter: brightness(1.1);
-}
-
-.feedback-container {
-  position: absolute;
-  top: 20%;
-  right: -100%;
-  transform: translateY(-50%);
-  padding: 20px; 
-  background-color: #739F65;
-  color: white;
-  border-radius: 10px;
-  width: 30vw;
-  max-width: 400px;
-  height: 60%;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease, right 0.5s ease;
-  margin-top: 278px;
-  margin-right: 40px;
-  overflow: auto; 
-  word-wrap: break-word; 
-}
-
-.feedback-container-visible {
-  right: 0;
-  opacity: 1;
 }
 
 .speaker-box {
@@ -256,7 +232,7 @@ body {
   cursor: pointer;
   transition: background 0.3s;
   color: white;
-  margin-bottom: -10px; 
+  margin-bottom: -100px; 
 }
 
 .play-button {
@@ -287,6 +263,22 @@ body {
   color: #220C10;
   text-align: right;
   margin-top: 20px;
+}
+
+.dynamic-pronunciation-back {
+  margin-top: -170px;
+}
+
+.back-right {
+  width: 60%;
+  margin-left: 300px; /* Shift content to the left by 300px */
+  display: flex;
+  flex-direction: column;
+  margin-top: -100px;
+}
+
+.card-back .back-right p {
+  margin-top: -90px;
 }
 
 .moved .card {

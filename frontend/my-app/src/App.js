@@ -222,24 +222,32 @@ function App() {
 
           {/* Back card */}
           <div className="card-back">
-            {/* Speaker button plays the fetched pronunciation audio */}
-            <div className="back-content">
-              <button className="speaker-box" onClick={playPronunciationAudio}>
-                <i className="fas fa-volume-up"></i> {/* Speaker icon */}
-              </button>
-              <p className="definition">Definition: {definition}</p> {/* Display the definition here */}
-            </div>
-            <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
-            <h3>{word}</h3> {/* Word */}
-            <button className="mic-button" onClick={handleFlip}>
-              <i className="fas fa-undo"></i> {/* Undo icon */}
-            </button>
+            <div className="back-left">
+              {/* Left side of the content */}
+              <div className="back-content-left">
+                <button className="speaker-box" onClick={playPronunciationAudio}>
+                  <i className="fas fa-volume-up"></i> {/* Speaker icon */}
+                </button>
+                <button className="mic-button" onClick={handleFlip}>
+                  <i className="fas fa-undo"></i> {/* Undo icon */}
+                </button>
+                {/* Play Recording button */}
+                <div className="rec-container">
+                  <button className="play-button" onClick={playAudio}>
+                    <i className="fas fa-play"></i> {/* Play button icon */}
+                  </button>
+                </div>
 
-            {/* Play Recording button */}
-            <div className="rec-container">
-              <button className="play-button" onClick={playAudio}>
-                <i className="fas fa-play"></i> {/* Play button icon */}
-              </button>
+                {/* Pronunciation and word */}
+                <h2 className="dynamic-pronunciation-back">{pronunciation}</h2>
+                <h3>{word}</h3>
+                <p className="definition">Definition: {definition}</p>
+              </div>
+            </div>
+
+            {/* Right side container for feedback content */}
+            <div className="back-right">
+              <h2>{geminiTips}</h2>
             </div>
           </div>
         </div>
@@ -263,15 +271,6 @@ function App() {
               await sendRating(3)
             }}>Good</button>
           </div>
-        </div>
-      )}
-
-      {/* Feedback container */}
-      {isFeedbackContainerVisible && (
-        <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
-          <h2>Feedback Container</h2>
-          <button className="feedback" onClick={fetchGeminiTips}>feedback</button>
-          <p>{geminiTips}</p>
         </div>
       )}
     </div>
