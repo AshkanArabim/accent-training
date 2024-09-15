@@ -1,6 +1,9 @@
-// import {MediaRecorder, register} from 'extendable-media-recorder';
-// import {connect} from 'extendable-media-recorder-wav-encoder';
+import {MediaRecorder, register} from 'extendable-media-recorder';
+import {connect} from 'extendable-media-recorder-wav-encoder';
+
 export let blob;
+
+await register(await connect());
 
 export async function record(onRecordingStop) {
   if (!navigator.mediaDevices) {
@@ -12,7 +15,17 @@ export async function record(onRecordingStop) {
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function (stream) {
       let chunks = [];
-      let recorder = new MediaRecorder(stream);
+      let recorder = new MediaRecorder(stream,{
+        mimeType: 'audio/wav'
+      });
+
+      const audioContext = new AudioContext({ sampleRate: 16000 });
+      const mediaStreamAudioSourceNode = new MediaStreamAudioSourceNode(audioContext, { mediaStream: stream });
+      const mediaStreamAudioDestinationNode = new MediaStreamAudioDestinationNode(audioContext);
+
+      mediaStreamAudioSourceNode.connect(mediaStreamAudioDestinationNode);
+
+      recorder = new MediaRecorder(mediaStreamAudioDestinationNode.stream, {mimeType: 'audio/wav'});
 
       recorder.ondataavailable = event => {
         chunks.push(event.data);
@@ -59,17 +72,4 @@ export async function record(onRecordingStop) {
     });
 }
 
-        // fetch(uploadURL, {
-        //     method: "POST",
-        //     cache: "no-cache",
-        //     body: formData
-        // }).then(resp => {
-        //     if (resp.status === 200) {
-        //     window.location.reload(true);
-        //     } else {
-        //     console.error("Error:", resp)
-        //     }
-        // }).catch(err => {
-        //     console.error(err);
-        // });
  

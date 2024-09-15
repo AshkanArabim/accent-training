@@ -1,5 +1,6 @@
-from flask import Flask, current_app, jsonify
+from flask import Flask, current_app, jsonify, request
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from turnWordToIpa import word2Ipa
 from turnWordToDef import word2Def
 from aud2ipa import aud2IPA
@@ -32,8 +33,19 @@ def word2def(word):
 
 @app.route("/aud2ipa", methods=['POST'])
 def aud2ipa():
-    audio = request.files['file']
-    return aud2IPA(audio)
+    audio = request.files['audio_file']
+    print(audio.mimetype)
+    i = 1
+    while True:
+        dst = os.path.join(
+            current_app.instance_path,
+            current_app.config.get('UPLOAD_FOLDER', 'uploads'),
+            secure_filename(f'audio_record_{i}.wav'))
+        if not os.path.exists(dst): break
+        i += 1
+    audio.save(dst)
+    
+    return aud2IPA(dst)
 
 @app.route('/word2aud/<word>')  # Move to JS
 def word2aud_route(word):
