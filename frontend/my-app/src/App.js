@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { record, blob } from './audioRecorder';
+import { record, blob, inputPhoneme } from './audioRecorder';
 import giveFeedback from './geminiLinguist';
 
 function App() {
@@ -61,9 +61,9 @@ function App() {
     fetchDefinition();
   }, [word]);
 
-  const fetchGeminiTips = async () => {
+  const fetchGeminiTips = async (user, correct) => {
     try {
-      const response = await giveFeedback("osteoporosis", "oseoupourosie");
+      const response = await giveFeedback(correct, user);
       if (response) {
         setGeminiTips(response); // Handle the result
       }
@@ -132,6 +132,7 @@ function App() {
     record(() => {
       console.log("Recording finished: Triggering flip...");
       handleFlip(); 
+      fetchGeminiTips(pronunciation, inputPhoneme)
     });
   };
 
