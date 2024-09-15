@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import giveFeedback from './geminiLinguist';
 import './App.css';
 
 function App() {
@@ -10,6 +11,9 @@ function App() {
   const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false); // For feedback transition
   const [rating, setRating] = useState(null);
+  const [geminiResponse, setGeminiResponse] = useState('');
+  const [error, setError] = useState(false);
+  const [state, setState] = useState('');
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -60,6 +64,17 @@ function App() {
     console.log('Rating:', rating);
   };
 
+  // giveFeedback(() => {
+  //   setState('loading');
+  //   try {
+  //       const response = giveFeedback("apple", "apol");
+  //       setGeminiResponse(response);
+  //       setState('success');
+  //   } catch (e) {
+  //       setError(e);
+  //   }
+  //   }, []);
+
   return (
     <div className={`app-container ${isMoved ? 'moved' : ''}`}>
       <header className="app-header">
@@ -105,7 +120,7 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
-          <p>AI feedback goes here</p>
+          <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>feedback</button>
         </div>
       )}
     </div>
