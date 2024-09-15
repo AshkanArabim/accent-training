@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import giveFeedback from './geminiLinguist';
 import './App.css';
 import { record, blob } from './audioRecorder';
+import giveFeedback from './geminiLinguist';
 
 function App() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -9,21 +9,21 @@ function App() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRatingContainerVisible, setIsRatingContainerVisible] = useState(false);
   const [ratingVisible, setRatingVisible] = useState(false); 
-  const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
+  const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false); 
   const [feedbackVisible, setFeedbackVisible] = useState(false); 
-  const [rating, setRating] = useState(null);
 
   const [pronunciation, setPronunciation] = useState("Fetching...");  
   const [definition, setDefinition] = useState("Fetching...");
   const [word] = useState("Atlas");  
 
+  // Fetch the word pronunciation
   useEffect(() => {
     const fetchPronunciation = async () => {
       try {
         const response = await fetch(`http://127.0.0.1:5000/word2ipa/${word}`);
         if (response.ok) {
-          const data = await response.text();  
-          setPronunciation(data);  
+          const data = await response.text();
+          setPronunciation(data);
         } else {
           console.error('Error fetching pronunciation:', response.status);
           setPronunciation("Error fetching pronunciation");
@@ -58,8 +58,6 @@ function App() {
   }, [word]);
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
-
     if (!isFlipped) {
       setTimeout(() => {
         setIsExpanded(true);
@@ -68,7 +66,13 @@ function App() {
           setTimeout(() => {
             setIsRatingContainerVisible(true);
             setTimeout(() => {
-              setIsFeedbackContainerVisible(true);
+              setRatingVisible(true); 
+              setTimeout(() => {
+                setIsFeedbackContainerVisible(true);
+                setTimeout(() => {
+                  setFeedbackVisible(true); 
+                }, 100); 
+              }, 600);
             }, 600);
           }, 600);
         }, 600);
@@ -78,36 +82,24 @@ function App() {
       setIsExpanded(false);
       setIsRatingContainerVisible(false);
       setIsFeedbackContainerVisible(false);
-      setRatingVisible(false); 
-      setFeedbackVisible(false); 
+      setRatingVisible(false);
+      setFeedbackVisible(false);
     }
+
+    setIsFlipped(!isFlipped); 
   };
 
-  useEffect(() => {
-    if (isRatingContainerVisible) {
-      setTimeout(() => {
-        setRatingVisible(true);
-      }, 100); 
-    }
-  }, [isRatingContainerVisible]);
-
-  useEffect(() => {
-    if (isFeedbackContainerVisible) {
-      setTimeout(() => {
-        setFeedbackVisible(true);
-      }, 100); 
-    }
-  }, [isFeedbackContainerVisible]);
-
-  const handleRating = (rating) => {
-    setRating(rating);
-    console.log('Rating:', rating);
+  const handleMicClick = () => {
+    console.log("Microphone clicked: Starting recording...");
+    record(() => {
+      console.log("Recording finished: Triggering flip...");
+      handleFlip(); 
+    });
   };
 
   const playAudio = () => {
     if (blob) {
       const audio = new Audio();
-      console.log(blob);
       audio.src = URL.createObjectURL(blob);
       audio.play();
     }
@@ -120,16 +112,19 @@ function App() {
       </header>
       <div className={`card-container ${isFlipped ? 'flipped' : ''}`}>
         <div className={`card ${isExpanded ? 'expanded' : ''}`}>
+          {/* Front card */}
           <div className="card-front">
             <div className="pronunciation-container">
               <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
             </div>
             <h3 className="dynamic-word">{word}</h3> {/* Word */}
-            <button className="mic-button" onClick={handleFlip}>
+            {/* Microphone button triggers recording and flips after recording */}
+            <button className="mic-button" onClick={handleMicClick}>
               <i className="fas fa-microphone"></i> {/* Microphone icon */}
             </button>
           </div>
 
+          {/* Back card */}
           <div className="card-back">
             <button className="speaker-box">
               <i className="fas fa-volume-up"></i> {/* Speaker icon */}
@@ -140,29 +135,28 @@ function App() {
               <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
             </button>
 
-            {/* Recording buttons inside the back card */}
+            {/* Play Recording button */}
             <div className="rec-container">
-              <button className="rec-btn" onClick={() => record()} id="toggle-rec-btn">Record</button>
-            </div>
-            <div className="rec-container">
-              <button className="rec-btn" onClick={() => playAudio()} id="toggle-rec-btn">Play Recording</button>
+              <button className="rec-btn" onClick={playAudio} id="toggle-rec-btn">Play Recording</button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Rating container */}
       {isRatingContainerVisible && (
         <div className={`rating-container ${ratingVisible ? 'rating-container-visible' : ''}`}>
           <h2>Rate Your Pronunciation</h2>
           <div className="rating-buttons">
-            <button className="rating-button bad" onClick={() => handleRating('Bad')}>Bad</button>
-            <button className="rating-button ok" onClick={() => handleRating('Ok')}>Ok</button>
-            <button className="rating-button average" onClick={() => handleRating('Average')}>Average</button>
-            <button className="rating-button good" onClick={() => handleRating('Good')}>Good</button>
+            <button className="rating-button bad">Bad</button>
+            <button className="rating-button ok">Ok</button>
+            <button className="rating-button average">Average</button>
+            <button className="rating-button good">Good</button>
           </div>
         </div>
       )}
 
+      {/* Feedback container */}
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
@@ -174,3 +168,4 @@ function App() {
 }
 
 export default App;
+
