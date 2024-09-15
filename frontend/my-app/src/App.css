@@ -270,9 +270,18 @@ body {
   color: white;
 }
 
-
 .mic-button:hover {
   background: #444;
+}
+
+.definition {
+  position: absolute;
+  right: 350px;  /* Adjust this value as needed */
+  top: 10px;    /* Adjust this value as needed */
+  font-size: 1.4rem;
+  color: white;
+  text-align: right;
+  margin-top: 20px;
 }
 
 .moved .card {
