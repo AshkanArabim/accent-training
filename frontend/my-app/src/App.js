@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import giveFeedback from './geminiLinguist';
 import './App.css';
+import {record,blob} from './audioRecorder'
 
 function App() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -11,9 +12,6 @@ function App() {
   const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false); // For feedback transition
   const [rating, setRating] = useState(null);
-  const [geminiResponse, setGeminiResponse] = useState('');
-  const [error, setError] = useState(false);
-  const [state, setState] = useState('');
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -64,16 +62,14 @@ function App() {
     console.log('Rating:', rating);
   };
 
-  // giveFeedback(() => {
-  //   setState('loading');
-  //   try {
-  //       const response = giveFeedback("apple", "apol");
-  //       setGeminiResponse(response);
-  //       setState('success');
-  //   } catch (e) {
-  //       setError(e);
-  //   }
-  //   }, []);
+  const playAudio = () => {
+    if (blob) {
+      const audio = new Audio();
+      console.log(blob)
+      audio.src = URL.createObjectURL(blob);
+      audio.play();
+    }
+  };
 
   return (
     <div className={`app-container ${isMoved ? 'moved' : ''}`}>
@@ -123,6 +119,12 @@ function App() {
           <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>feedback</button>
         </div>
       )}
+      <div className="rec-container">
+          <button className="rec-btn" onClick={() => record()}id="toggle-rec-btn">Record</button>
+      </div>
+      <div className="rec-container">
+          <button className="rec-btn" onClick={() => playAudio()}id="toggle-rec-btn">Record</button>
+      </div>
     </div>
   );
 }
