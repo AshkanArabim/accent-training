@@ -1,7 +1,7 @@
 import {MediaRecorder, register} from 'extendable-media-recorder';
 import {connect} from 'extendable-media-recorder-wav-encoder';
 
-export let blob;
+export let blob,inputPhoneme;
 
 await register(await connect());
 
@@ -39,7 +39,7 @@ export async function record(onRecordingStop) {
         let formData = new FormData();
         formData.append('audio_file', blob);
 
-        const response = await fetch(`http://127.0.0.1:5000/aud2ipa`, {
+        let response =  await fetch(`http://127.0.0.1:5000/aud2ipa`, {
                 method: "POST",
                 cache: "no-cache",
                 body: formData
@@ -47,11 +47,16 @@ export async function record(onRecordingStop) {
                 if (resp.status !== 200) {
                     console.error("Error:", resp)
                 }
+                // console.log(resp)
+                inputPhoneme = resp
+                console.log(inputPhoneme)
             }).catch(err => {
                 console.error(err);
             });
         
+        inputPhoneme = await inputPhoneme.text()
         console.log(response)
+        console.log(inputPhoneme)
         // Trigger the callback function passed in to handle flip
         if (onRecordingStop) {
           onRecordingStop();
