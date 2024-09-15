@@ -1,18 +1,23 @@
 import express from "express";
+import { createPractice, updatePractice } from "../scheduling";
 
 const router = express.Router();
 
 // competency rating api
 // receives: "good", "medium", "bad", "very bad"
 router.put("/ratePractice", async (req, res) => {
-	try {
-		// TODO: update dummy logic
-		return res.status(200).end();
-	} catch (error: any) {
-		const msg = `couldn't rate practice: ${error.message}`;
-		console.log(msg);
-		res.status(500).json({ message: msg });
-	}
+  try {
+    const { _id, rating } = req.body;
+    if (!_id || !rating) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    const newPractice = await updatePractice(_id, new Date(), rating)
+    return res.status(200).json(newPractice);
+  } catch (error: any) {
+    const msg = `Couldn't rate practice: ${error.message}`;
+    console.log(msg);
+    res.status(500).json({ message: msg });
+  }
 });
 
 // practice fetch api
