@@ -17,7 +17,36 @@ function App() {
 
   const [pronunciation, setPronunciation] = useState("Fetching...");  
   const [definition, setDefinition] = useState("Fetching...");  // Definition state
-  const [word] = useState("Atlas");  
+  const [word, setWord] = useState("Fetching word...");
+  const [wordId, setWordId] = useState("0");
+
+  // Fetch the word from backend
+  useEffect(() => {
+    const fetchWord = async () => {
+      if (word !== "Fetching word...") {
+        return
+      }
+
+      const errMsg = 'Error fetching word'
+      try {
+        const response = await fetch(`http://localhost:3001/api/nextPractice`);
+
+        if (response.ok) {
+          const data = await response.json();
+          setWordId(data._id);
+          setWord(data.word)
+        } else {
+          console.error(errMsg);
+          setWord(errMsg)
+        }
+      } catch (error) {
+        console.error(errMsg)
+        setWord(errMsg)
+      }
+    }
+
+    fetchWord() 
+  })
 
   // Fetch the word pronunciation
   useEffect(() => {
@@ -38,7 +67,7 @@ function App() {
     };
 
     fetchPronunciation();
-  }, [word]);
+  });
 
   // Fetch word definition
   useEffect(() => {
@@ -59,7 +88,7 @@ function App() {
     };
 
     fetchDefinition();
-  }, [word]);
+  });
 
   const fetchGeminiTips = async (user, correct) => {
     try {
@@ -91,7 +120,7 @@ function App() {
     };
 
     fetchPronunciationAudioData();
-  }, [word]);
+  });
 
   // Flip card and trigger animation sequence
   const handleFlip = () => {
@@ -153,7 +182,26 @@ function App() {
     }
   };
 
-  return (
+  const sendRating = async (rating) => {
+    try {
+      await fetch('http://localhost:3001/api/ratePractice', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rating: rating, _id: wordId })
+      });
+
+      const nextWordData = await (await fetch("http://localhost:3001/api/nextPractice")).json();
+      const nextWord = nextWordData.word;
+
+      setWord(nextWord);
+    } catch (error) {
+      console.error('Error sending rating:', error);
+    }
+  };
+
+  return (  
     <div className={`app-container ${isMoved ? 'moved' : ''}`}>
       <header className="app-header">
         <h1 className="main-title">Vocowbulary.courses</h1>
@@ -202,10 +250,18 @@ function App() {
         <div className={`rating-container ${ratingVisible ? 'rating-container-visible' : ''}`}>
           <h2>Rate Your Pronunciation</h2>
           <div className="rating-buttons">
-            <button className="rating-button bad">Bad</button>
-            <button className="rating-button ok">Ok</button>
-            <button className="rating-button average">Average</button>
-            <button className="rating-button good">Good</button>
+            <button className="rating-button bad" onClick={async () => {
+              await sendRating(0)
+            }}>Bad</button>
+            <button className="rating-button ok" onClick={async () => {
+              await sendRating(1)
+            }}>Ok</button>
+            <button className="rating-button average" onClick={async () => {
+              await sendRating(2)
+            }}>Average</button>
+            <button className="rating-button good" onClick={async () => {
+              await sendRating(3)
+            }}>Good</button>
           </div>
         </div>
       )}
