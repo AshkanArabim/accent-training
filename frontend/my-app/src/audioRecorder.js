@@ -2,7 +2,7 @@
 // import {connect} from 'extendable-media-recorder-wav-encoder';
 export let blob;
 
-export function record(onRecordingStop) {
+export async function record(onRecordingStop) {
   if (!navigator.mediaDevices) {
     console.error("getUserMedia not supported.");
     return;
@@ -18,11 +18,27 @@ export function record(onRecordingStop) {
         chunks.push(event.data);
       };
 
-      recorder.onstop = event => {
+      recorder.onstop = async event =>  {
         console.log("Recording stopped.");
         blob = new Blob(chunks, { type: recorder.mimeType });
         chunks = [];
 
+        let formData = new FormData();
+        formData.append('audio_file', blob);
+
+        const response = await fetch(`http://127.0.0.1:5000/aud2ipa`, {
+                method: "POST",
+                cache: "no-cache",
+                body: formData
+            }).then(resp => {
+                if (resp.status !== 200) {
+                    console.error("Error:", resp)
+                }
+            }).catch(err => {
+                console.error(err);
+            });
+        
+        console.log(response)
         // Trigger the callback function passed in to handle flip
         if (onRecordingStop) {
           onRecordingStop();
