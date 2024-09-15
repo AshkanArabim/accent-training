@@ -61,7 +61,6 @@ function App() {
     fetchDefinition();
   }, [word]);
 
-<<<<<<< HEAD
   const fetchGeminiTips = async () => {
     try {
       const response = await giveFeedback("osteoporosis", "oseoupourosie");
@@ -93,9 +92,7 @@ function App() {
     fetchPronunciationAudioData();
   }, [word]);
 
-=======
   // Flip card and trigger animation sequence
->>>>>>> 118c470 (fix play button)
   const handleFlip = () => {
     if (!isFlipped) {
       setTimeout(() => {
@@ -210,12 +207,8 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
-<<<<<<< HEAD
           <button className="feedback" onClick={() => fetchGeminiTips()}>feedback</button>
           <p>{geminiTips}</p>
-=======
-          <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>Get Feedback</button>
->>>>>>> 118c470 (fix play button)
         </div>
       )}
 
