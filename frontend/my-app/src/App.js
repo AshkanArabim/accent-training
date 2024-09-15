@@ -155,7 +155,7 @@ function App() {
   return (
     <div className={`app-container ${isMoved ? 'moved' : ''}`}>
       <header className="app-header">
-        <h1 className="main-title">Pronunciation Training</h1>
+        <h1 className="main-title">Vocowbulary.courses</h1>
       </header>
       <div className={`card-container ${isFlipped ? 'flipped' : ''}`}>
         <div className={`card ${isExpanded ? 'expanded' : ''}`}>
