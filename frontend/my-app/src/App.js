@@ -1,224 +1,235 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import { record, blob, inputPhoneme } from './audioRecorder';
-import giveFeedback from './geminiLinguist';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import { record, blob, inputPhoneme } from "./audioRecorder";
+import giveFeedback from "./geminiLinguist";
 
 function App() {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [isMoved, setIsMoved] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isRatingContainerVisible, setIsRatingContainerVisible] = useState(false);
-  const [ratingVisible, setRatingVisible] = useState(false); 
-  const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false); 
-  const [feedbackVisible, setFeedbackVisible] = useState(false); 
+	const [isFlipped, setIsFlipped] = useState(false);
+	const [isMoved, setIsMoved] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(false);
+	const [isRatingContainerVisible, setIsRatingContainerVisible] = useState(false);
+	const [ratingVisible, setRatingVisible] = useState(false);
+	const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
+	const [feedbackVisible, setFeedbackVisible] = useState(false);
 
-  const [geminiTips, setGeminiTips] = useState("Evaluating...");
-  const [pronunciationAudioData, setPronunciationAudioData] = useState(null);
+	const [geminiTips, setGeminiTips] = useState("Evaluating...");
+	const [pronunciationAudioData, setPronunciationAudioData] = useState(null);
 
-  const [pronunciation, setPronunciation] = useState("Fetching...");  
-  const [definition, setDefinition] = useState("Fetching...");  // Definition state
-  const [word, setWord] = useState("Fetching word...");
-  const [wordId, setWordId] = useState("0");
+	const [pronunciation, setPronunciation] = useState("Fetching...");
+	const [definition, setDefinition] = useState("Fetching..."); // Definition state
+	const [word, setWord] = useState("Atlas");
+	const [wordId, setWordId] = useState("0");
 
-  // Fetch the word from backend
-  useEffect(() => {
-    const fetchWord = async () => {
-      if (word !== "Fetching word...") {
-        return
-      }
+	const fetchPronunciation = async () => {
+		try {
+			const response = await fetch(`http://127.0.0.1:5000/word2ipa/${word}`);
+			if (response.ok) {
+				const data = await response.text();
+				setPronunciation(data);
+			} else {
+				console.error("Error fetching pronunciation:", response.status);
+				setPronunciation("Error fetching pronunciation");
+			}
+		} catch (error) {
+			console.error("Error fetching pronunciation:", error);
+			setPronunciation("Error fetching pronunciation");
+		}
+	};
 
-      const errMsg = 'Error fetching word'
-      try {
-        const response = await fetch(`http://localhost:3001/api/nextPractice`);
+	const fetchDefinition = async () => {
+		try {
+			const response = await fetch(`http://127.0.0.1:5000/word2def/${word}`);
+			if (response.ok) {
+				const data = await response.text();
+				setDefinition(data);
+			} else {
+				console.error("Error fetching definition:", response.status);
+				setDefinition("Error fetching definition");
+			}
+		} catch (error) {
+			console.error("Error fetching definition:", error);
+			setDefinition("Error fetching definition");
+		}
+	};
 
-        if (response.ok) {
-          const data = await response.json();
-          setWordId(data._id);
-          setWord(data.word)
-        } else {
-          console.error(errMsg);
-          setWord(errMsg)
-        }
-      } catch (error) {
-        console.error(errMsg)
-        setWord(errMsg)
-      }
-    }
+	const fetchPronunciationAudioData = async () => {
+		try {
+			const response = await fetch(`http://127.0.0.1:5000/word2aud/${word}`);
+			if (response.ok) {
+				const data = await response.json();
+				setPronunciationAudioData(`data:audio/wav;base64,${data["audio_url"]}`);
+			} else {
+				console.error("Error fetching pronunciation sound after fetch:", response.status);
+				setPronunciationAudioData("Error fetching pronunciation sound after fetch");
+			}
+		} catch (error) {
+			console.error("Error fetching pronunciation sound before fetch:", error);
+			setPronunciationAudioData("Error fetching pronunciation sound before fetch");
+		}
+	};
 
-    fetchWord() 
-  })
+	// Fetch the word from backend
+	useEffect(() => {
+		const fetchWord = async () => {
+			// if (word !== "Fetching word...") {
+			// 	return;
+			// }
 
-  // Fetch the word pronunciation
-  useEffect(() => {
-    const fetchPronunciation = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/word2ipa/${word}`);
-        if (response.ok) {
-          const data = await response.text();
-          setPronunciation(data);
-        } else {
-          console.error('Error fetching pronunciation:', response.status);
-          setPronunciation("Error fetching pronunciation");
-        }
-      } catch (error) {
-        console.error('Error fetching pronunciation:', error);
-        setPronunciation("Error fetching pronunciation");
-      }
-    };
+			const errMsg = "Error fetching word";
+			try {
+				const response = await fetch(`http://localhost:3001/api/nextPractice`);
 
-    fetchPronunciation();
-  });
+				if (response.ok) {
+					const data = await response.json();
+					await fetchPronunciation();
+					console.log("Pronunciation done");
+					await fetchDefinition();
+					console.log("Definition done");
+					await fetchPronunciationAudioData();
+					console.log("Audio data done");
+					setWordId(data._id);
+					setWord(data.word);
+				} else {
+					console.error(errMsg);
+					setWord(errMsg);
+				}
+			} catch (error) {
+				console.error(errMsg);
+			}
+		};
 
-  // Fetch word definition
-  useEffect(() => {
-    const fetchDefinition = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/word2def/${word}`);
-        if (response.ok) {
-          const data = await response.text();  
-          setDefinition(data);  
-        } else {
-          console.error('Error fetching definition:', response.status);
-          setDefinition("Error fetching definition");
-        }
-      } catch (error) {
-        console.error('Error fetching definition:', error);
-        setDefinition("Error fetching definition");
-      }
-    };
+		fetchWord();
+	});
 
-    fetchDefinition();
-  });
+	// Fetch the word pronunciation
+	// useEffect(() => {
 
-  const fetchGeminiTips = async (user, correct) => {
-    try {
-      const response = await giveFeedback(correct, user);
-      if (response) {
-        setGeminiTips(response); // Handle the result
-      }
-    } catch (error) {
-      console.error('Error fetching Gemini Tips:', error);
-      setDefinition("Error fetching Gemini Tips");
-    }
-  };
+	//   };
 
-  useEffect(() => {
-    const fetchPronunciationAudioData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/word2aud/${word}`);
-        if (response.ok) {
-          const data = await response.json(); 
-          setPronunciationAudioData(`data:audio/wav;base64,${data['audio_url']}`);  
-        } else {
-          console.error('Error fetching pronunciation sound after fetch:', response.status);
-          setPronunciationAudioData("Error fetching pronunciation sound after fetch");
-        }
-      } catch (error) {
-        console.error('Error fetching pronunciation sound before fetch:', error);
-        setPronunciationAudioData("Error fetching pronunciation sound before fetch");
-      }
-    };
+	//   fetchPronunciation();
+	// });
 
-    fetchPronunciationAudioData();
-  });
+	// Fetch word definition
+	// useEffect(() => {
 
-  // Flip card and trigger animation sequence
-  const handleFlip = () => {
-    if (!isFlipped) {
-      setTimeout(() => {
-        setIsExpanded(true);
-        setTimeout(() => {
-          setIsMoved(true);
-          setTimeout(() => {
-            setIsRatingContainerVisible(true);
-            setTimeout(() => {
-              setRatingVisible(true); 
-              setTimeout(() => {
-                setIsFeedbackContainerVisible(true);
-                setTimeout(() => {
-                  setFeedbackVisible(true); 
-                }, 100); 
-              }, 600);
-            }, 600);
-          }, 600);
-        }, 600);
-      }, 600);
-    } else {
-      setIsMoved(false);
-      setIsExpanded(false);
-      setIsRatingContainerVisible(false);
-      setIsFeedbackContainerVisible(false);
-      setRatingVisible(false);
-      setFeedbackVisible(false);
-    }
+	//   fetchDefinition();
+	// });
 
-    setIsFlipped(!isFlipped); 
-  };
+	const fetchGeminiTips = async (user, correct) => {
+		try {
+			const response = await giveFeedback(correct, user);
+			if (response) {
+				setGeminiTips(response); // Handle the result
+			}
+		} catch (error) {
+			console.error("Error fetching Gemini Tips:", error);
+			setDefinition("Error fetching Gemini Tips");
+		}
+	};
 
-  // Handle microphone click -> Start recording -> After recording, flip the card
-  const handleMicClick = () => {
-    console.log("Microphone clicked: Starting recording...");
-    record(() => {
-      console.log("Recording finished: Triggering flip...");
-      handleFlip(); 
-      fetchGeminiTips(pronunciation, inputPhoneme)
-    });
-  };
+	// useEffect(() => {
 
-  // Play the recorded audio
-  const playAudio = () => {
-    if (blob) {
-      const audio = new Audio();
-      audio.src = URL.createObjectURL(blob);
-      audio.play();
-    }
-  };
+	//   fetchPronunciationAudioData();
+	// });
 
-  // Play the fetched pronunciation audio
-  const playPronunciationAudio = () => {
-    if (pronunciationAudioData) {
-      let audio = new Audio(pronunciationAudioData); 
-      audio.play();
-    }
-  };
+	// Flip card and trigger animation sequence
+	const handleFlip = () => {
+		if (!isFlipped) {
+			setTimeout(() => {
+				setIsExpanded(true);
+				setTimeout(() => {
+					setIsMoved(true);
+					setTimeout(() => {
+						setIsRatingContainerVisible(true);
+						setTimeout(() => {
+							setRatingVisible(true);
+							setTimeout(() => {
+								setIsFeedbackContainerVisible(true);
+								setTimeout(() => {
+									setFeedbackVisible(true);
+								}, 100);
+							}, 600);
+						}, 600);
+					}, 600);
+				}, 600);
+			}, 600);
+		} else {
+			setIsMoved(false);
+			setIsExpanded(false);
+			setIsRatingContainerVisible(false);
+			setIsFeedbackContainerVisible(false);
+			setRatingVisible(false);
+			setFeedbackVisible(false);
+		}
 
-  const sendRating = async (rating) => {
-    try {
-      await fetch('http://localhost:3001/api/ratePractice', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ rating: rating, _id: wordId })
-      });
+		setIsFlipped(!isFlipped);
+	};
 
-      const nextWordData = await (await fetch("http://localhost:3001/api/nextPractice")).json();
-      const nextWord = nextWordData.word;
+	// Handle microphone click -> Start recording -> After recording, flip the card
+	const handleMicClick = () => {
+		console.log("Microphone clicked: Starting recording...");
+		record(() => {
+			console.log("Recording finished: Triggering flip...");
+			handleFlip();
+			fetchGeminiTips(pronunciation, inputPhoneme);
+		});
+	};
 
-      setWord(nextWord);
-    } catch (error) {
-      console.error('Error sending rating:', error);
-    }
-  };
+	// Play the recorded audio
+	const playAudio = () => {
+		if (blob) {
+			const audio = new Audio();
+			audio.src = URL.createObjectURL(blob);
+			audio.play();
+		}
+	};
 
-  return (  
-    <div className={`app-container ${isMoved ? 'moved' : ''}`}>
-      <header className="app-header">
-        <h1 className="main-title">Vocowbulary.courses</h1>
-      </header>
-      <div className={`card-container ${isFlipped ? 'flipped' : ''}`}>
-        <div className={`card ${isExpanded ? 'expanded' : ''}`}>
-          {/* Front card */}
-          <div className="card-front">
-            <div className="pronunciation-container">
-              <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
-            </div>
-            <h3 className="dynamic-word">{word}</h3> {/* Word */}
-            {/* Microphone button triggers recording and flips after recording */}
-            <button className="mic-button" onClick={handleMicClick}>
-              <i className="fas fa-microphone"></i> {/* Microphone icon */}
-            </button>
-          </div>
+	// Play the fetched pronunciation audio
+	const playPronunciationAudio = () => {
+		if (pronunciationAudioData) {
+			let audio = new Audio(pronunciationAudioData);
+			audio.play();
+		}
+	};
+
+	const sendRating = async (rating) => {
+		try {
+			await fetch("http://localhost:3001/api/ratePractice", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ rating: rating, _id: wordId }),
+			});
+
+			const nextWordData = await (await fetch("http://localhost:3001/api/nextPractice")).json();
+			const nextWord = nextWordData.word;
+
+			setWord(nextWord);
+		} catch (error) {
+			console.error("Error sending rating:", error);
+		}
+	};
+
+	return (
+		<div className={`app-container ${isMoved ? "moved" : ""}`}>
+			<header className="app-header">
+				<h1 className="main-title">Vocowbulary.courses</h1>
+			</header>
+			<div className={`card-container ${isFlipped ? "flipped" : ""}`}>
+				<div className={`card ${isExpanded ? "expanded" : ""}`}>
+					{/* Front card */}
+					<div className="card-front">
+						<div className="pronunciation-container">
+							<h2 className="dynamic-pronunciation">{pronunciation}</h2>{" "}
+							{/* Fetched pronunciation */}
+						</div>
+						<h3 className="dynamic-word">{word}</h3> {/* Word */}
+						{/* Microphone button triggers recording and flips after recording */}
+						<button className="mic-button" onClick={handleMicClick}>
+							<i className="fas fa-microphone"></i> {/* Microphone icon */}
+						</button>
+					</div>
 
           {/* Back card */}
           <div className="card-back">
@@ -253,28 +264,65 @@ function App() {
         </div>
       </div>
 
-      {/* Rating container */}
-      {isRatingContainerVisible && (
-        <div className={`rating-container ${ratingVisible ? 'rating-container-visible' : ''}`}>
-          <h2>Rate Your Pronunciation</h2>
-          <div className="rating-buttons">
-            <button className="rating-button bad" onClick={async () => {
-              await sendRating(0)
-            }}>Bad</button>
-            <button className="rating-button ok" onClick={async () => {
-              await sendRating(1)
-            }}>Ok</button>
-            <button className="rating-button average" onClick={async () => {
-              await sendRating(2)
-            }}>Average</button>
-            <button className="rating-button good" onClick={async () => {
-              await sendRating(3)
-            }}>Good</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+			{/* Rating container */}
+			{isRatingContainerVisible && (
+				<div className={`rating-container ${ratingVisible ? "rating-container-visible" : ""}`}>
+					<h2>Rate Your Pronunciation</h2>
+					<div className="rating-buttons">
+						<button
+							className="rating-button bad"
+							onClick={async () => {
+								await sendRating(0);
+								window.location.reload();
+							}}
+						>
+							Bad
+						</button>
+						<button
+							className="rating-button ok"
+							onClick={async () => {
+								await sendRating(1);
+								window.location.reload();
+							}}
+						>
+							Ok
+						</button>
+						<button
+							className="rating-button average"
+							onClick={async () => {
+								await sendRating(2);
+								window.location.reload();
+							}}
+						>
+							Average
+						</button>
+						<button
+							className="rating-button good"
+							onClick={async () => {
+								await sendRating(3);
+								window.location.reload();
+							}}
+						>
+							Good
+						</button>
+					</div>
+				</div>
+			)}
+
+			{/* Feedback container */}
+			{isFeedbackContainerVisible && (
+				<div
+					className={`feedback-container ${feedbackVisible ? "feedback-container-visible" : ""}`}
+				>
+					<h2>Feedback Container</h2>
+					<button className="feedback" onClick={fetchGeminiTips}>
+						feedback
+					</button>
+					<p>{geminiTips}</p>
+				</div>
+			)}
+		</div>
+	);
 }
 
 export default App;
