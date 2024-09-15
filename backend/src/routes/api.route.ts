@@ -25,13 +25,13 @@ router.put("/ratePractice", async (req, res) => {
 
 router.get("/nextPractice", async (req, res) => {
 	try {
-		const nextPractice = await getNextPractice(new Date())
+		const nextPractice = await getNextPractice(new Date());
 
 		if (!nextPractice) {
-			res.status(404).json({message: "no more practices left for today"})
+			return res.status(404).json({ message: "no more practices left for today" });
 		}
 
-		res.status(200).json(nextPractice)
+		return res.status(200).json(nextPractice);
 	} catch (error: any) {
 		const msg = `failed to get next word: ${error.message}`;
 		console.log(msg);
@@ -42,12 +42,12 @@ router.get("/nextPractice", async (req, res) => {
 // only takes a word
 router.get("/newPractice", async (req, res) => {
 	try {
-		const { word } = req.body
+		const { word } = req.body;
 
 		// TODO: this doesn't check if that word already exists
-		const newPractice = await createPractice(word)
-		
-		return res.status(200).json(newPractice)
+		const newPractice = await createPractice(word);
+
+		return res.status(200).json(newPractice);
 	} catch (error: any) {
 		const msg = `failed to create new practice: ${error.message}`;
 		console.log(msg);
