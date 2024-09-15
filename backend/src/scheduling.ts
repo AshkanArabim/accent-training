@@ -28,10 +28,10 @@ export async function updatePractice(_id: string, rating: number): Promise<Pract
 	const intervals = [1, 2, 3, 8, 17];
 	const scroreToProgressChange = [-3, -1, 1, 3];
 	const msToDay = 60 * 60 * 24 * 1000;
-	const maxProgress = intervals.length;
+	const maxProgress = intervals.length - 1;
 
 	// bound rating between 0 and len(scoreToProgressChange)
-	rating = Math.max((Math.min(rating, scroreToProgressChange.length)), 0)
+	rating = Math.max((Math.min(rating, scroreToProgressChange.length - 1)), 0)
 
 	// add n number of days to next practice
 	const newProgress = Math.max(Math.min(progress + scroreToProgressChange[rating], maxProgress), 0);
