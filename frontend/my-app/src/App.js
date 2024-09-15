@@ -40,6 +40,7 @@ function App() {
     fetchPronunciation();
   }, [word]);
 
+  // Fetch word definition
   useEffect(() => {
     const fetchDefinition = async () => {
       try {
@@ -60,6 +61,7 @@ function App() {
     fetchDefinition();
   }, [word]);
 
+<<<<<<< HEAD
   const fetchGeminiTips = async () => {
     try {
       const response = await giveFeedback("osteoporosis", "oseoupourosie");
@@ -91,6 +93,9 @@ function App() {
     fetchPronunciationAudioData();
   }, [word]);
 
+=======
+  // Flip card and trigger animation sequence
+>>>>>>> 118c470 (fix play button)
   const handleFlip = () => {
     if (!isFlipped) {
       setTimeout(() => {
@@ -123,6 +128,7 @@ function App() {
     setIsFlipped(!isFlipped); 
   };
 
+  // Handle microphone click -> Start recording -> After recording, flip the card
   const handleMicClick = () => {
     console.log("Microphone clicked: Starting recording...");
     record(() => {
@@ -131,6 +137,7 @@ function App() {
     });
   };
 
+  // Play the recorded audio
   const playAudio = () => {
     if (blob) {
       const audio = new Audio();
@@ -176,9 +183,11 @@ function App() {
               <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
             </button>
 
-            {/* Play Recording button */}
+            {/* Play Recording button styled similarly to other buttons */}
             <div className="rec-container">
-              <button className="rec-btn" onClick={playAudio} id="toggle-rec-btn">Play Recording</button>
+              <button className="play-button" onClick={playAudio}>
+                <i className="fas fa-play"></i> {/* Play button icon */}
+              </button>
             </div>
           </div>
         </div>
@@ -201,8 +210,12 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
+<<<<<<< HEAD
           <button className="feedback" onClick={() => fetchGeminiTips()}>feedback</button>
           <p>{geminiTips}</p>
+=======
+          <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>Get Feedback</button>
+>>>>>>> 118c470 (fix play button)
         </div>
       )}
 
