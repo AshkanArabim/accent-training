@@ -69,9 +69,10 @@ function App() {
       }
     } catch (error) {
       console.error('Error fetching Gemini Tips:', error);
-        setDefinition("Error fetching Gemini Tips");
+      setDefinition("Error fetching Gemini Tips");
     }
   };
+
   useEffect(() => {
     const fetchPronunciationAudioData = async () => {
       try {
@@ -143,9 +144,10 @@ function App() {
     }
   };
 
+  // Play the fetched pronunciation audio
   const playPronunciationAudio = () => {
-    if ([pronunciationAudioData]) {
-      let audio = new Audio([pronunciationAudioData][0])
+    if (pronunciationAudioData) {
+      let audio = new Audio(pronunciationAudioData); 
       audio.play();
     }
   };
@@ -171,7 +173,8 @@ function App() {
 
           {/* Back card */}
           <div className="card-back">
-            <button className="speaker-box">
+            {/* Speaker button plays the fetched pronunciation audio */}
+            <button className="speaker-box" onClick={playPronunciationAudio}>
               <i className="fas fa-volume-up"></i> {/* Speaker icon */}
             </button>
             <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
@@ -180,7 +183,7 @@ function App() {
               <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
             </button>
 
-            {/* Play Recording button styled similarly to other buttons */}
+            {/* Play Recording button */}
             <div className="rec-container">
               <button className="play-button" onClick={playAudio}>
                 <i className="fas fa-play"></i> {/* Play button icon */}
@@ -207,17 +210,12 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
-          <button className="feedback" onClick={() => fetchGeminiTips()}>feedback</button>
+          <button className="feedback" onClick={fetchGeminiTips}>feedback</button>
           <p>{geminiTips}</p>
         </div>
       )}
-
-      <div className="rec-container">
-          <button className="rec-btn" onClick={() => playPronunciationAudio()} id="toggle-rec-btn">Play Proper Pronunciation</button>
-      </div>
     </div>
   );
 }
 
 export default App;
-
