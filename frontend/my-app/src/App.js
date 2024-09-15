@@ -13,6 +13,8 @@ function App() {
   const [feedbackVisible, setFeedbackVisible] = useState(false); 
 
   const [geminiTips, setGeminiTips] = useState("Evaluating...");
+  const [pronunciationAudioData, setPronunciationAudioData] = useState(null);
+
   const [pronunciation, setPronunciation] = useState("Fetching...");  
   const [definition, setDefinition] = useState("Fetching...");
   const [word] = useState("Atlas");  
@@ -69,6 +71,25 @@ function App() {
         setDefinition("Error fetching Gemini Tips");
     }
   };
+  useEffect(() => {
+    const fetchPronunciationAudioData = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/word2aud/${word}`);
+        if (response.ok) {
+          const data = await response.json(); 
+          setPronunciationAudioData(`data:audio/wav;base64,${data['audio_url']}`);  
+        } else {
+          console.error('Error fetching pronunciation sound after fetch:', response.status);
+          setPronunciationAudioData("Error fetching pronunciation sound after fetch");
+        }
+      } catch (error) {
+        console.error('Error fetching pronunciation sound before fetch:', error);
+        setPronunciationAudioData("Error fetching pronunciation sound before fetch");
+      }
+    };
+
+    fetchPronunciationAudioData();
+  }, [word]);
 
   const handleFlip = () => {
     if (!isFlipped) {
@@ -114,6 +135,13 @@ function App() {
     if (blob) {
       const audio = new Audio();
       audio.src = URL.createObjectURL(blob);
+      audio.play();
+    }
+  };
+
+  const playPronunciationAudio = () => {
+    if ([pronunciationAudioData]) {
+      let audio = new Audio([pronunciationAudioData][0])
       audio.play();
     }
   };
@@ -177,6 +205,10 @@ function App() {
           <p>{geminiTips}</p>
         </div>
       )}
+
+      <div className="rec-container">
+          <button className="rec-btn" onClick={() => playPronunciationAudio()} id="toggle-rec-btn">Play Proper Pronunciation</button>
+      </div>
     </div>
   );
 }

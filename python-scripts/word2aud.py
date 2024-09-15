@@ -17,7 +17,9 @@ def word2AUD(word):
         "content-type": "application/json",
         "Authorization": os.environ.get("SPEECHIFY_API_KEY")
     }
-
+    
     response = requests.post(url, json=payload, headers=headers)
-
-    return response.text
+    
+    response = response.json()
+    
+    return response['audio_data']
