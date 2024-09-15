@@ -1,6 +1,7 @@
 from flask import Flask, current_app, jsonify
 from flask_cors import CORS
 from turnWordToIpa import word2Ipa
+from turnWordToDef import word2Def
 from aud2ipa import aud2IPA
 from word2aud import word2AUD
 import os
@@ -24,6 +25,10 @@ def home():
 @app.route('/word2ipa/<word>')
 def word2ipa(word):
     return word2Ipa(word)
+
+@app.route('/word2def/<word>')
+def word2def(word):
+    return word2Def(word)
 
 @app.route("/aud2ipa", methods=['POST'])
 def aud2ipa():
