@@ -1,17 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import giveFeedback from './geminiLinguist';
 import './App.css';
-import {record,blob} from './audioRecorder'
+import { record, blob } from './audioRecorder';
 
 function App() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isMoved, setIsMoved] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRatingContainerVisible, setIsRatingContainerVisible] = useState(false);
-  const [ratingVisible, setRatingVisible] = useState(false); // For rating transition
+  const [ratingVisible, setRatingVisible] = useState(false); 
   const [isFeedbackContainerVisible, setIsFeedbackContainerVisible] = useState(false);
-  const [feedbackVisible, setFeedbackVisible] = useState(false); // For feedback transition
+  const [feedbackVisible, setFeedbackVisible] = useState(false); 
   const [rating, setRating] = useState(null);
+
+  const [pronunciation, setPronunciation] = useState("Fetching...");  
+  const [word] = useState("Atlas");  
+
+  useEffect(() => {
+    const fetchPronunciation = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/word2ipa/${word}`);
+        if (response.ok) {
+          const data = await response.text();  
+          setPronunciation(data);  
+        } else {
+          console.error('Error fetching pronunciation:', response.status);
+          setPronunciation("Error fetching pronunciation");
+        }
+      } catch (error) {
+        console.error('Error fetching pronunciation:', error);
+        setPronunciation("Error fetching pronunciation");
+      }
+    };
+
+    fetchPronunciation();
+  }, [word]);
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -34,26 +57,24 @@ function App() {
       setIsExpanded(false);
       setIsRatingContainerVisible(false);
       setIsFeedbackContainerVisible(false);
-      setRatingVisible(false); // Reset the visibility state for rating
-      setFeedbackVisible(false); // Reset the visibility state for feedback
+      setRatingVisible(false); 
+      setFeedbackVisible(false); 
     }
   };
 
-  // Delay adding the visible class for the rating container
   useEffect(() => {
     if (isRatingContainerVisible) {
       setTimeout(() => {
         setRatingVisible(true);
-      }, 100); // Small delay before applying visibility
+      }, 100); 
     }
   }, [isRatingContainerVisible]);
 
-  // Delay adding the visible class for the feedback container
   useEffect(() => {
     if (isFeedbackContainerVisible) {
       setTimeout(() => {
         setFeedbackVisible(true);
-      }, 100); // Small delay before applying visibility
+      }, 100); 
     }
   }, [isFeedbackContainerVisible]);
 
@@ -65,7 +86,7 @@ function App() {
   const playAudio = () => {
     if (blob) {
       const audio = new Audio();
-      console.log(blob)
+      console.log(blob);
       audio.src = URL.createObjectURL(blob);
       audio.play();
     }
@@ -80,23 +101,31 @@ function App() {
         <div className={`card ${isExpanded ? 'expanded' : ''}`}>
           <div className="card-front">
             <div className="pronunciation-container">
-              <button className="speaker-box">
-                <i className="fas fa-volume-up"></i> {/* Speaker icon */}
-              </button>
-              <h2 className="dynamic-pronunciation">at·luhs</h2>
+              <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
             </div>
-            <h3 className="dynamic-word">Atlas</h3>
+            <h3 className="dynamic-word">{word}</h3> {/* Word */}
             <button className="mic-button" onClick={handleFlip}>
               <i className="fas fa-microphone"></i> {/* Microphone icon */}
             </button>
           </div>
 
           <div className="card-back">
-            <h2>at·luhs</h2>
-            <h3>Atlas</h3>
+            <button className="speaker-box">
+              <i className="fas fa-volume-up"></i> {/* Speaker icon */}
+            </button>
+            <h2 className="dynamic-pronunciation">{pronunciation}</h2> {/* Fetched pronunciation */}
+            <h3>{word}</h3> {/* Word */}
             <button className="mic-button" onClick={handleFlip}>
               <i className="fas fa-microphone"></i> {/* Microphone icon for Go Back */}
             </button>
+
+            {/* Recording buttons inside the back card */}
+            <div className="rec-container">
+              <button className="rec-btn" onClick={() => record()} id="toggle-rec-btn">Record</button>
+            </div>
+            <div className="rec-container">
+              <button className="rec-btn" onClick={() => playAudio()} id="toggle-rec-btn">Play Recording</button>
+            </div>
           </div>
         </div>
       </div>
@@ -119,12 +148,6 @@ function App() {
           <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>feedback</button>
         </div>
       )}
-      <div className="rec-container">
-          <button className="rec-btn" onClick={() => record()}id="toggle-rec-btn">Record</button>
-      </div>
-      <div className="rec-container">
-          <button className="rec-btn" onClick={() => playAudio()}id="toggle-rec-btn">Record</button>
-      </div>
     </div>
   );
 }

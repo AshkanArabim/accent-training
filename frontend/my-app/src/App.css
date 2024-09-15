@@ -250,6 +250,7 @@ body {
   cursor: pointer;
   transition: background 0.3s;
   color: white;
+  margin-bottom: 20px;
 }
 
 .mic-button:hover {
