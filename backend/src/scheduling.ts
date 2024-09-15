@@ -53,3 +53,14 @@ export async function updatePractice(_id: string, now: Date, rating: number): Pr
 
 	return newPracticeObj;
 }
+
+export async function getNextPractice(now: Date) {
+	const practice = await PracticeDB.findOne({
+		dueDate: {
+			$gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+			$lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+		},
+	});
+
+	return practice;
+}

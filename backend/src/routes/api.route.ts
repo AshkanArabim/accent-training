@@ -1,5 +1,5 @@
 import express from "express";
-import { createPractice, updatePractice } from "../scheduling";
+import { createPractice, getNextPractice, updatePractice } from "../scheduling";
 
 const router = express.Router();
 
@@ -23,10 +23,15 @@ router.put("/ratePractice", async (req, res) => {
 // practice fetch api
 // sends: just a word
 
-router.get("/nextPracticeWord", async (req, res) => {
+router.get("/nextPractice", async (req, res) => {
 	try {
-		// TODO:
-		return res.status(200).json({ word: "dummy" });
+		const nextPractice = await getNextPractice(new Date())
+
+		if (!nextPractice) {
+			res.status(404).json({message: "no more practices left for today"})
+		}
+
+		res.status(200).json(nextPractice)
 	} catch (error: any) {
 		const msg = `failed to get next word: ${error.message}`;
 		console.log(msg);
@@ -35,7 +40,7 @@ router.get("/nextPracticeWord", async (req, res) => {
 });
 
 // only takes a word
-router.get("/newPracticeWord", async (req, res) => {
+router.get("/newPractice", async (req, res) => {
 	try {
 		const { word } = req.body
 
