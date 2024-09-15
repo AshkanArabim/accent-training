@@ -15,28 +15,27 @@ export async function createPractice(word: string): Promise<Practice> {
 	return mongoPracticeEntry;
 }
 
-export async function updatePractice(_id: string, now: Date, rating: number): Promise<Practice> {
+export async function updatePractice(_id: string, rating: number): Promise<Practice> {
 	const practice = await PracticeDB.findById(_id);
 	if (!practice) {
 		throw Error("Practice with that ID not found!!");
 	}
-
+	
 	const { progress, word } = practice;
-
+	const dueDateString = practice.dueDate;
+	let dueDate = new Date(dueDateString);
+	
 	const intervals = [1, 2, 3, 8, 17];
-	// TODO: update this to 4 ratings
-	const scroreToProgressChange = [-3, -1, 1];
+	const scroreToProgressChange = [-3, -1, 1, 3];
 	const msToDay = 60 * 60 * 24 * 1000;
 	const maxProgress = intervals.length;
-	const correct = rating === scroreToProgressChange.length - 1;
+
+	// bound rating between 0 and len(scoreToProgressChange)
+	rating = Math.max((Math.min(rating, scroreToProgressChange.length)), 0)
 
 	// add n number of days to next practice
-	const newProgress = progress + scroreToProgressChange[rating];
-	let newDueDate = new Date(now.getTime() + 1 * msToDay);
-
-	if (correct && progress < maxProgress) {
-		newDueDate = new Date(now.getTime() + intervals[progress] * msToDay);
-	}
+	const newProgress = Math.max(Math.min(progress + scroreToProgressChange[rating], maxProgress), 0);
+	const newDueDate = new Date(dueDate.getTime() + intervals[progress] * msToDay);
 
 	const newPracticeObj = await PracticeDB.findByIdAndUpdate(
 		_id,
@@ -54,12 +53,8 @@ export async function updatePractice(_id: string, now: Date, rating: number): Pr
 	return newPracticeObj;
 }
 
-export async function getNextPractice(now: Date) {
-	const practice = await PracticeDB.findOne({
-		dueDate: {
-			$lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
-		},
-	}).sort({ dueDate: 1 });
+export async function getNextPractice() {
+	const practice = await PracticeDB.findOne().sort({ dueDate: 1 });
 
 	return practice;
 }

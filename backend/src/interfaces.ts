@@ -1,8 +1,8 @@
 export interface wordRating {
 	// sent from client
-	word: String;
+	_id: String;
 	// TODO: update to 4 ratings
-	rating: Number; // 0 (awful), 1 (bad), 2(good)
+	rating: Number; // 0 - 3
 }
 
 export interface WordResponse {

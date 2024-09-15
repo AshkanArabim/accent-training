@@ -8,10 +8,10 @@ const router = express.Router();
 router.put("/ratePractice", async (req, res) => {
 	try {
 		const { _id, rating } = req.body;
-		if (!_id || !rating) {
+		if (_id == null || rating == null) {
 			return res.status(400).json({ message: "Missing required fields" });
 		}
-		const newPractice = await updatePractice(_id, new Date(), rating);
+		const newPractice = await updatePractice(_id, rating);
 		return res.status(200).json(newPractice);
 	} catch (error: any) {
 		const msg = `Couldn't rate practice: ${error.message}`;
@@ -25,7 +25,7 @@ router.put("/ratePractice", async (req, res) => {
 
 router.get("/nextPractice", async (req, res) => {
 	try {
-		const nextPractice = await getNextPractice(new Date());
+		const nextPractice = await getNextPractice();
 
 		if (!nextPractice) {
 			return res.status(404).json({ message: "no more practices left for today" });
