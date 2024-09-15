@@ -14,6 +14,7 @@ function App() {
   const [rating, setRating] = useState(null);
 
   const [pronunciation, setPronunciation] = useState("Fetching...");  
+  const [definition, setDefinition] = useState("Fetching...");
   const [word] = useState("Atlas");  
 
   useEffect(() => {
@@ -34,6 +35,26 @@ function App() {
     };
 
     fetchPronunciation();
+  }, [word]);
+
+  useEffect(() => {
+    const fetchDefinition = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/word2def/${word}`);
+        if (response.ok) {
+          const data = await response.text();  
+          setDefinition(data);  
+        } else {
+          console.error('Error fetching definition:', response.status);
+          setDefinition("Error fetching definition");
+        }
+      } catch (error) {
+        console.error('Error fetching definition:', error);
+        setDefinition("Error fetching definition");
+      }
+    };
+
+    fetchDefinition();
   }, [word]);
 
   const handleFlip = () => {
@@ -145,7 +166,7 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
-          <button className="feedback" onClick={() => giveFeedback('apple', 'apol')}>feedback</button>
+          <button className="feedback" onClick={() => giveFeedback(word, 'apol')}>feedback</button>
         </div>
       )}
     </div>
