@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import {record,blob} from './audioRecorder'
 
 function App() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -60,6 +61,15 @@ function App() {
     console.log('Rating:', rating);
   };
 
+  const playAudio = () => {
+    if (blob) {
+      const audio = new Audio();
+      console.log(blob)
+      audio.src = URL.createObjectURL(blob);
+      audio.play();
+    }
+  };
+
   return (
     <div className={`app-container ${isMoved ? 'moved' : ''}`}>
       <header className="app-header">
@@ -108,6 +118,12 @@ function App() {
           <p>AI feedback goes here</p>
         </div>
       )}
+      <div className="rec-container">
+          <button className="rec-btn" onClick={() => record()}id="toggle-rec-btn">Record</button>
+      </div>
+      <div className="rec-container">
+          <button className="rec-btn" onClick={() => playAudio()}id="toggle-rec-btn">Record</button>
+      </div>
     </div>
   );
 }
