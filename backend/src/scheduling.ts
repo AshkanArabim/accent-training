@@ -1,10 +1,10 @@
-import PracticeDB from './models/practice.model'
-import { Practice } from './interfaces';
+import PracticeDB from "./models/practice.model";
+import { Practice } from "./interfaces";
 
 // implementation based on https://github.com/lo-tp/memory-scheduler/blob/master/index.js
 
 export async function createPractice(word: string): Promise<Practice> {
-	const practiceObj= {
+	const practiceObj = {
 		word: word,
 		progress: 0,
 		dueDate: new Date().toISOString(),
@@ -15,15 +15,14 @@ export async function createPractice(word: string): Promise<Practice> {
 	return mongoPracticeEntry;
 }
 
-// TODO: make this update the mongo database
 export async function updatePractice(_id: string, now: Date, rating: number): Promise<Practice> {
-	const practice = await PracticeDB.findById(_id)
+	const practice = await PracticeDB.findById(_id);
 	if (!practice) {
-		throw Error("Practice with that ID not found!!")
+		throw Error("Practice with that ID not found!!");
 	}
 
-	const { progress, word } = practice
-	
+	const { progress, word } = practice;
+
 	const intervals = [1, 2, 3, 8, 17];
 	// TODO: update this to 4 ratings
 	const scroreToProgressChange = [-3, -1, 1];
@@ -39,14 +38,18 @@ export async function updatePractice(_id: string, now: Date, rating: number): Pr
 		newDueDate = new Date(now.getTime() + intervals[progress] * msToDay);
 	}
 
-	const newPracticeObj = await PracticeDB.findByIdAndUpdate(_id, {
-		dueDate: newDueDate.toISOString(),
-		progress: newProgress,
-	}, { new: true });
+	const newPracticeObj = await PracticeDB.findByIdAndUpdate(
+		_id,
+		{
+			dueDate: newDueDate.toISOString(),
+			progress: newProgress,
+		},
+		{ new: true }
+	);
 
 	if (!newPracticeObj) {
-		throw Error("Practice with that ID not found!!")
+		throw Error("Practice with that ID not found!!");
 	}
-	
+
 	return newPracticeObj;
 }
