@@ -13,6 +13,7 @@ function App() {
   const [feedbackVisible, setFeedbackVisible] = useState(false); 
   const [rating, setRating] = useState(null);
 
+  const [geminiTips, setGeminiTips] = useState("Evaluating...");
   const [pronunciation, setPronunciation] = useState("Fetching...");  
   const [definition, setDefinition] = useState("Fetching...");
   const [word] = useState("Atlas");  
@@ -56,6 +57,18 @@ function App() {
 
     fetchDefinition();
   }, [word]);
+
+  const fetchGeminiTips = async () => {
+    try {
+      const response = await giveFeedback("osteoporosis", "oseoupourosie");
+      if (response) {
+        setGeminiTips(response); // Handle the result
+      }
+    } catch (error) {
+      console.error('Error fetching Gemini Tips:', error);
+        setDefinition("Error fetching Gemini Tips");
+    }
+  };
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
@@ -166,7 +179,8 @@ function App() {
       {isFeedbackContainerVisible && (
         <div className={`feedback-container ${feedbackVisible ? 'feedback-container-visible' : ''}`}>
           <h2>Feedback Container</h2>
-          <button className="feedback" onClick={() => giveFeedback(word, 'apol')}>feedback</button>
+          <button className="feedback" onClick={() => fetchGeminiTips()}>feedback</button>
+          <p>{geminiTips}</p>
         </div>
       )}
     </div>
